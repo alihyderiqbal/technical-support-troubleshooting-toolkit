@@ -1,7 +1,6 @@
-```yaml
 name: Keep Streamlit app awake
 
-"on":
+on:
   schedule:
     - cron: "17 */4 * * *"
   workflow_dispatch:
@@ -31,4 +30,3 @@ jobs:
 
       - name: Visit the Streamlit app
         run: python keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
-```
