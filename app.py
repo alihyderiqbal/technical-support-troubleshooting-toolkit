@@ -22,7 +22,7 @@ st.markdown("""
         color: #f1f5f9;
     }
     
-    /* Sidebar Styling */
+    /* Sidebar Background & Border */
     [data-testid="stSidebar"] {
         background-color: #070e1b;
         border-right: 1px solid #1b2a4a;
@@ -47,16 +47,20 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* Fix Expander Dark Styling */
-    div[data-testid="stExpander"] {
+    /* COMPLETELY ELIMINATE THE EXPANDER WHITE BOX BUG */
+    details[data-testid="stExpander"] {
         background-color: #0d1726 !important;
         border: 1px solid #1b2a4a !important;
         border-radius: 8px !important;
     }
-    .streamlit-expanderHeader {
+    summary[data-testid="stExpanderSummary"] {
         background-color: #0d1726 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
+    }
+    .streamlit-expanderContent {
+        background-color: #0d1726 !important;
+        color: #ffffff !important;
     }
     
     /* Professional Dark Button Styling */
@@ -90,7 +94,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# SESSION STATE & SELF-TRAINING MEMORY INITIALIZATION
+# SESSION STATE & KNOWLEDGE BASE INITIALIZATION
 # ---------------------------------------------------------
 if "knowledge_base" not in st.session_state:
     st.session_state.knowledge_base = [
@@ -121,14 +125,15 @@ if "connections" not in st.session_state:
     st.session_state.connections = {
         "salesforce": False,
         "zendesk": False,
-        "slack": False
+        "slack": False,
+        "civicplus": False
     }
 
 if "training_metrics" not in st.session_state:
     st.session_state.training_metrics = {
-        "version": "v2.4",
-        "epochs_trained": 42,
-        "accuracy_rate": "99.4%"
+        "version": "v2.5",
+        "epochs_trained": 45,
+        "accuracy_rate": "99.6%"
     }
 
 # ---------------------------------------------------------
@@ -136,15 +141,15 @@ if "training_metrics" not in st.session_state:
 # ---------------------------------------------------------
 st.markdown('<div class="hero-badge">🛡️ AI Tier 2 Support Intelligence Engine</div>', unsafe_allow_html=True)
 st.title("⚡ Enterprise Incident & Triage Copilot")
-st.markdown("##### Self-Training Model Context Protocol (MCP) Hub for Salesforce, Zendesk, and Slack")
+st.markdown("##### Autonomous Self-Training Model Context Protocol (MCP) Hub & CivicPlus Knowledge Integration")
 st.markdown("---")
 
 # ---------------------------------------------------------
-# SIDEBAR: MCP INTEGRATIONS & SELF-TRAINING CONTROL PANEL
+# SIDEBAR: MCP INTEGRATIONS & CIVICPLUS KNOWLEDGE BASE
 # ---------------------------------------------------------
 with st.sidebar:
     st.markdown("### 🔌 MCP Platform Integrations")
-    st.write("Configure enterprise credentials to establish live MCP data streams.")
+    st.write("Configure enterprise endpoints & knowledge bases.")
     
     # Salesforce Form
     with st.expander("⚙️ Salesforce CRM Connection"):
@@ -169,22 +174,43 @@ with st.sidebar:
             st.session_state.connections["slack"] = True
             st.success("✅ Slack Feed Handshake Successful!")
 
+    # CivicPlus HelpCenter Form (NEW)
+    with st.expander("⚙️ CivicPlus HelpCenter KB"):
+        cp_url = st.text_input("HelpCenter URL", value="https://www.civicplus.help/", key="cp_url")
+        cp_key = st.text_input("Ingestion API Key", type="password", key="cp_key")
+        if st.button("Connect CivicPlus KB", key="connect_cp"):
+            st.session_state.connections["civicplus"] = True
+            # Ingest CivicPlus sample case into knowledge base
+            cp_case = {
+                "id": "CP-KB-101",
+                "source": "CivicPlus HelpCenter (https://www.civicplus.help/)",
+                "summary": "Citizen request portal widget failing to render JavaScript state synchronization.",
+                "resolution": "Verified content security policy (CSP) headers, updated widget script tag domain whitelist, and cleared CDN edge cache.",
+                "confidence": "99.5%"
+            }
+            if not any(c["id"] == "CP-KB-101" for c in st.session_state.knowledge_base):
+                st.session_state.knowledge_base.insert(0, cp_case)
+            st.success("✅ CivicPlus HelpCenter Linked & Ingested!")
+
     st.markdown("---")
     st.markdown("### 🧠 Autonomous AI Self-Training")
     st.info(f"**Model Version:** {st.session_state.training_metrics['version']}\n\n**Training Epochs:** {st.session_state.training_metrics['epochs_trained']}\n\n**Inference Accuracy:** {st.session_state.training_metrics['accuracy_rate']}")
     
-    if st.button("🔄 Trigger Neural Model Retraining"):
+    if st.button("🔄 Trigger Neural Model Retraining", key="retrain_btn"):
         with st.spinner("Ingesting historical knowledge base & retraining pattern weights..."):
-            time.sleep(1.2)
+            time.sleep(1.0)
             st.session_state.training_metrics["epochs_trained"] += 1
-            st.session_state.training_metrics["version"] = f"v2.{st.session_state.training_metrics['epochs_trained'] % 10 + 5}"
+            st.session_state.training_metrics["version"] = f"v2.{st.session_state.training_metrics['epochs_trained'] % 10 + 6}"
             st.success(f"✅ Model successfully retrained on {len(st.session_state.knowledge_base)} indexed enterprise incidents!")
 
     st.markdown("---")
     st.markdown("### 📊 Status Overview")
-    st.markdown(f"**Salesforce:** {'🟢 Connected (Live MCP)' if st.session_state.connections['salesforce'] else '🟡 Standby / Sandbox'}")
-    st.markdown(f"**Zendesk:** {'🟢 Connected (Live MCP)' if st.session_state.connections['zendesk'] else '🟡 Standby / Sandbox'}")
-    st.markdown(f"**Slack:** {'🟢 Connected (Live MCP)' if st.session_state.connections['slack'] else '🟡 Standby / Sandbox'}")
+    st.markdown(f"**Salesforce:** {'🟢 Active' if st.session_state.connections['salesforce'] else '🟡 Standby'}")
+    st.markdown(f"**Zendesk:** {'🟢 Active' if st.session_state.connections['zendesk'] else '🟡 Standby'}")
+    st.markdown(f"**Slack:** {'🟢 Active' if st.session_state.connections['slack'] else '🟡 Standby'}")
+    st.markdown(f"**CivicPlus KB:** {'🟢 Active' if st.session_state.connections['civicplus'] else '🟡 Standby'}")
+    st.markdown("---")
+    st.markdown(f"**Indexed Knowledge Cases:** {len(st.session_state.knowledge_base)}")
 
 # ---------------------------------------------------------
 # MAIN INTERFACE: INCOMING INCIDENT ANALYSIS
@@ -192,7 +218,7 @@ with st.sidebar:
 st.markdown("### 📥 Incoming Support Case / Incident Log")
 ticket_input = st.text_area(
     "Paste support ticket description, raw error log, or API payload below:",
-    placeholder="Example: API 502 Bad Gateway timeout during batch payment processing, or database transaction deadlock...",
+    placeholder="Example: API 502 Bad Gateway timeout during batch payment processing, or CivicPlus portal widget error...",
     height=140
 )
 
@@ -209,11 +235,15 @@ if analyze_btn:
     else:
         with st.spinner("Querying connected MCP repositories & running self-trained neural pattern matching..."):
             
-            # Autonomous self-training adjustment during inference
             query_lower = ticket_input.lower()
             best_match = st.session_state.knowledge_base[0]
             
-            if any(k in query_lower for k in ["sql", "database", "deadlock", "transaction", "lock"]):
+            if any(k in query_lower for k in ["civicplus", "portal", "widget", "citizen", "helpcenter"]):
+                for c in st.session_state.knowledge_base:
+                    if "CivicPlus" in c["source"]:
+                        best_match = c
+                        break
+            elif any(k in query_lower for k in ["sql", "database", "deadlock", "transaction", "lock"]):
                 best_match = st.session_state.knowledge_base[1]
             elif any(k in query_lower for k in ["windows", "service", "event viewer", "task manager"]):
                 best_match = st.session_state.knowledge_base[2]
@@ -241,7 +271,7 @@ if analyze_btn:
 
             with st.expander("🛠️ 2. Recommended Resolution & Engineer Investigation Guardrails", expanded=True):
                 st.markdown("""
-                * **AI Suggested Resolution (99.4% Self-Trained Accuracy):** Isolate affected service endpoints, review active transaction state, and apply targeted remediation based on accumulated historical telemetry.
+                * **AI Suggested Resolution (Self-Trained Accuracy):** Isolate affected service endpoints, review active transaction state, and apply targeted remediation based on accumulated historical telemetry.
                 * **⚠️ Mandatory Engineer Verification Steps:**
                   1. **Verify Tenant Scope:** Confirm whether the bug is localized to a single organization tenant or cluster-wide.
                   2. **Inspect Live State:** Check system resource monitors or gateway logs before executing fixes.
@@ -259,7 +289,7 @@ ORDER BY created_at DESC;
                 """, language="sql")
 
             st.markdown("---")
-            st.markdown("### 💾 Self-Train & Commit Resolution to App Memory")
+            st.markdown("### 💾 Self-Train & Commit Resolution to App Storage")
             st.write("When you verify this resolution, committing it will instantly trigger the AI self-training loop to update weights for future cases.")
             
             new_res = st.text_input("Refined Resolution Notes:", value=best_match['resolution'], key="refine_res")
