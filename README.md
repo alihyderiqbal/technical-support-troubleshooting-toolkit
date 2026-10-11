@@ -63,9 +63,10 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Optional secrets (on Streamlit Cloud: App settings, then Secrets) so nothing is stored in the repository:
+Optional secrets (on Streamlit Cloud: App settings, then Secrets) so nothing is stored in the repository. Server-side secrets are never put into the page and are only used after an admin enters `ACCESS_CODE` in the Connections tab:
 
 ```toml
+ACCESS_CODE = "choose-a-long-random-code"
 ANTHROPIC_API_KEY = "..."
 ZENDESK_SUBDOMAIN = "..."
 ZENDESK_EMAIL = "..."
@@ -82,8 +83,8 @@ This repository contains **no customer data**. Demos should use fictional or pub
 
 ### Limitations
 
-* No user login or role-based access.
-* Saved cases are stored in a simple JSON file, which can be lost when the hosting app restarts. A production system needs a database.
+* No user login or role-based access (one optional admin access code only).
+* Cases a visitor saves live in their browser session only (download a JSON backup to keep them). A small curated library of fictional example cases ships with the app. A production system needs a database.
 * Search is keyword-based. It does not yet match by meaning (embeddings).
 * Live connections use manually supplied tokens rather than an admin-approved OAuth flow.
 * The Zendesk, Salesforce and Slack connectors have been tested against simulated responses, not against production accounts.
@@ -143,7 +144,10 @@ A structured template for documenting technical issues, troubleshooting steps, t
 
 * `app.py`: the Streamlit application
 * `requirements.txt`: Python dependencies
-* `.streamlit/config.toml`: navy theme
+* `.streamlit/config.toml`: dark theme and viewer toolbar
+* `assets/`: shield logo (`logo.svg`, `logo.png`) and the browser-tab icon (`favicon.png`)
+* `seed_cases.json`: fictional, read-only example cases
+* `scripts/keep_awake.py` and `.github/workflows/keep-awake.yml`: opens the app in a headless browser every 4 hours and wakes it if it is asleep, so visitors do not land on the "gone to sleep" screen
 
 ---
 

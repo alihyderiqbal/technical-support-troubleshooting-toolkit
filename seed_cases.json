@@ -1,0 +1,56 @@
+[
+  {
+    "id": "seed-001",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] Card payments failing with 502 Bad Gateway",
+    "ticket": "Customer reported card payments failing with 502 Bad Gateway since mid-morning. Several staff users affected in production, started after a release.",
+    "resolution": "Payment processor status page showed an upstream incident. Confirmed failures in the activity log shared the same time window, paused retries, and verified with a test transaction once the processor recovered.",
+    "outcome": "worked",
+    "category": "Payments + API / HTTP"
+  },
+  {
+    "id": "seed-002",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] Duplicate payment receipts after session timeout",
+    "ticket": "Resident paid a bill twice. Receipts show two charges a few seconds apart after the page timed out during checkout.",
+    "resolution": "Matched the two transactions by timestamp, confirmed the first had completed, and refunded the duplicate. Advised the customer to wait for the confirmation page before retrying.",
+    "outcome": "worked",
+    "category": "Payments"
+  },
+  {
+    "id": "seed-003",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] User locked out after enabling two-factor authentication",
+    "ticket": "One user cannot sign in after two-factor authentication was enabled. SSO through Okta returns to the sign-in page. Chrome on Windows.",
+    "resolution": "Account was flagged as unverified after an email change. Re-verified the account, reset the authenticator enrolment, and confirmed login in a private window. Other users were not affected.",
+    "outcome": "worked",
+    "category": "Authentication / SSO"
+  },
+  {
+    "id": "seed-004",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] Sync between Zendesk and Salesforce returns 401 Unauthorized",
+    "ticket": "Integration stopped creating cases. API returns 401 Unauthorized since yesterday. The token was rotated last week.",
+    "resolution": "The connected app still used the old token. Generated a fresh token with the same permissions, updated the integration credentials, and confirmed a new test case synced end to end.",
+    "outcome": "worked",
+    "category": "Integration + API / HTTP"
+  },
+  {
+    "id": "seed-005",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] Subscriber notification emails not arriving",
+    "ticket": "A subscriber says notification emails stopped arriving. Other subscribers on the same list still receive them.",
+    "resolution": "Subscriber had been suppressed after a bounce. Checked the sent/pending message log, confirmed the address was valid, removed the suppression and verified the next send was delivered.",
+    "outcome": "worked",
+    "category": "Notifications / Email"
+  },
+  {
+    "id": "seed-006",
+    "created": "2026-10-12T00:00:00+00:00",
+    "title": "[Example] Blank page after login in the browser",
+    "ticket": "The portal shows a blank page after login for one user. Console shows failed requests. Works for colleagues.",
+    "resolution": "Cleared cache and cookies, disabled a browser extension that blocked scripts, and confirmed the page rendered in a private window and after the change.",
+    "outcome": "partial",
+    "category": "Browser / UI"
+  }
+]
