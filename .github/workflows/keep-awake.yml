@@ -24,4 +24,5 @@ jobs:
           pip install playwright
           playwright install --with-deps chromium
       - name: Visit the app
-        run: python scripts/keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
+      run: python keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
+run: python keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
