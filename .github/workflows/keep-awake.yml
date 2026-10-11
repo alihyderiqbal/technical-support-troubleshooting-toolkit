@@ -1,3 +1,4 @@
+
 name: Keep Streamlit app awake
 
 on:
@@ -29,4 +30,4 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Visit the Streamlit app
-        run: python keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
+        run: python keep_awake.py "https://aitier2supportintelligence.streamlit.app"
