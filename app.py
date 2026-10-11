@@ -13,30 +13,47 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# STYLING: Deep Navy Blue Enterprise Theme
+# STYLING: High-Contrast Deep Navy Blue Enterprise Theme
 # ---------------------------------------------------------
 st.markdown("""
     <style>
+    /* Main App Background */
     .stApp {
-        background-color: #0a1128;
-        color: #e2e8f0;
+        background-color: #080e21;
+        color: #f1f5f9;
     }
+    
+    /* Sidebar Background & Border */
     [data-testid="stSidebar"] {
-        background-color: #0d1b2a;
-        border-right: 1px solid #1b263b;
+        background-color: #0b132b;
+        border-right: 1px solid #1c2541;
     }
+    
+    /* Force ALL text labels in sidebar and main body to be bright white/light slate */
+    label, .stTextInput label, .stTextArea label, .stSelectbox label, p, span {
+        color: #f8fafc !important;
+        font-weight: 500;
+    }
+    
+    /* Input Boxes & Text Areas Styling */
     .stTextArea textarea, .stTextInput input {
-        background-color: #1b263b !important;
+        background-color: #1c2541 !important;
         color: #ffffff !important;
-        border: 1px solid #415a77 !important;
+        border: 1px solid #48cae4 !important;
         border-radius: 8px !important;
     }
-    .status-card {
-        background-color: #1b263b;
-        padding: 12px;
+    
+    /* Placeholder Text Color */
+    ::placeholder {
+        color: #94a3b8 !important;
+        opacity: 1;
+    }
+    
+    /* Expander Styling */
+    .streamlit-expanderHeader {
+        background-color: #1c2541 !important;
+        color: #ffffff !important;
         border-radius: 6px;
-        border: 1px solid #415a77;
-        margin-bottom: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -79,37 +96,6 @@ if "api_keys" not in st.session_state:
     }
 
 # ---------------------------------------------------------
-# LIVE API CONNECTOR FUNCTIONS (REST / MCP SPEC)
-# ---------------------------------------------------------
-def pull_salesforce_live_cases(instance_url, access_token):
-    """Pulls real cases from Salesforce REST API if credentials exist."""
-    if not instance_url or not access_token:
-        return None
-    try:
-        headers = {"Authorization": f"Bearer {access_token}"}
-        query = "SELECT Id, Subject, Description, Status FROM Case ORDER BY CreatedDate DESC LIMIT 5"
-        res = requests.get(f"{instance_url}/services/data/v58.0/query/?q={query}", headers=headers, timeout=5)
-        if res.status_code == 200:
-            return res.json().get("records", [])
-    except Exception as e:
-        st.error(f"Salesforce Connection Error: {e}")
-    return None
-
-def pull_zendesk_live_tickets(subdomain, token):
-    """Pulls real tickets from Zendesk API if credentials exist."""
-    if not subdomain or not token:
-        return None
-    try:
-        url = f"https://{subdomain}.zendesk.com/api/v2/tickets.json?sort_by=created_at&sort_order=desc"
-        headers = {"Authorization": f"Bearer {token}"}
-        res = requests.get(url, headers=headers, timeout=5)
-        if res.status_code == 200:
-            return res.json().get("tickets", [])
-    except Exception as e:
-        st.error(f"Zendesk Connection Error: {e}")
-    return None
-
-# ---------------------------------------------------------
 # HEADER & SIDEBAR NAVIGATION
 # ---------------------------------------------------------
 st.title("⚡ AI Tier 2 Support Intelligence")
@@ -140,15 +126,12 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📊 Platform Connection Status")
     
-    # Salesforce Status Check
     sf_active = bool(st.session_state.api_keys["salesforce_token"])
     st.markdown(f"**Salesforce CRM:** {'🟢 Connected (Live API)' if sf_active else '🟡 Connected (Sandbox Engine)'}")
     
-    # Zendesk Status Check
     zd_active = bool(st.session_state.api_keys["zendesk_token"])
     st.markdown(f"**Zendesk Support:** {'🟢 Connected (Live API)' if zd_active else '🟡 Connected (Sandbox Engine)'}")
     
-    # Slack Status Check
     slk_active = bool(st.session_state.api_keys["slack_bot_token"])
     st.markdown(f"**Slack Channel:** {'🟢 Connected (Live API)' if slk_active else '🟡 Connected (Sandbox Engine)'}")
 
@@ -178,7 +161,6 @@ if analyze_btn:
     else:
         with st.spinner("Searching connected Salesforce, Zendesk, and Slack historical repositories..."):
             
-            # Match query against historical knowledge base
             query_lower = ticket_input.lower()
             best_match = st.session_state.knowledge_base[0]
             
@@ -190,7 +172,6 @@ if analyze_btn:
             st.markdown("---")
             st.subheader("📊 Tier 2 Forensic Report & Historical Match")
             
-            # Metric Display
             m1, m2, m3, m4 = st.columns(4)
             with m1:
                 st.metric(label="Match Confidence", value=best_match["confidence"], delta="High Accuracy")
@@ -201,7 +182,6 @@ if analyze_btn:
             with m4:
                 st.metric(label="Assigned Priority", value="P2 - High Impact")
 
-            # Section 1: Historical Case Reference
             with st.expander("🔍 1. Matched Enterprise Case (Historical Correlation)", expanded=True):
                 st.markdown(f"""
                 * **Incident Identifier:** `{best_match['id']}`
@@ -210,7 +190,6 @@ if analyze_btn:
                 * **Historical Resolution:** {best_match['resolution']}
                 """)
 
-            # Section 2: Recommended Resolution & Required Guardrails
             with st.expander("🛠️ 2. Recommended Resolution & Engineer Investigation Steps", expanded=True):
                 st.markdown("""
                 * **AI Suggested Resolution Path (99% Match):** Isolate affected service endpoints, inspect transaction lock tables, and verify connection pool parameters.
@@ -220,7 +199,6 @@ if analyze_btn:
                   3. **Audit Deployments:** Ensure no concurrent system updates or database schema changes are in progress.
                 """)
 
-            # Section 3: Diagnostic Code / SQL Script
             with st.expander("💻 3. Generated SQL / System Diagnostic Bundle", expanded=False):
                 st.code("""
 -- Read-only evidence collection query from toolkit
@@ -231,9 +209,6 @@ WHERE status IN ('failed', 'timeout')
 ORDER BY created_at DESC;
                 """, language="sql")
 
-            # ---------------------------------------------------------
-            # PERSISTENCE: Save Resolution to Memory
-            # ---------------------------------------------------------
             st.markdown("---")
             st.markdown("### 💾 Commit Resolution to App Storage")
             st.write("Save verified case resolutions directly to the application's persistent database for future reference.")
