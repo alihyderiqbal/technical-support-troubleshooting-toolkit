@@ -1156,7 +1156,7 @@ def load_icon():
     """The shield logo as the browser-tab icon (falls back to an emoji if the file is missing)."""
     try:
         from PIL import Image
-        img = Image.open(ASSETS_DIR / "favicon.png")
+        img = Image.open(APP_DIR / "favicon.png")
         img.load()
         return img
     except Exception:
