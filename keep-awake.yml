@@ -1,7 +1,6 @@
+```yaml
 name: Keep Streamlit app awake
 
-# Streamlit Community Cloud puts free apps to sleep when nobody visits them. This opens the app in a real browser every
-# few hours (and wakes it if it is already asleep) so LinkedIn visitors never land on the "gone to sleep" screen.
 on:
   schedule:
     - cron: "17 */4 * * *"
@@ -16,12 +15,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Install Playwright
         run: |
           pip install playwright
           playwright install --with-deps chromium
+
       - name: Visit the app
-        run: python scripts/keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
+        run: python keep_awake.py "https://ai-tier2-support-intelligence.streamlit.app"
+```
